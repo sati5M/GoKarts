@@ -5,6 +5,8 @@ local checkpointsPassed = 0
 local createCooldown = false
 local inRace = false
 local checkpoints = {
+
+    -- ALWAYS SET PASSED TO FALSE
     {coords = vector3(-1040.3065185547,-3478.8151855469,13.31156539917), passed = false},
     {coords = vector3(-1046.7602539063,-3486.8466796875,13.313842773438),passed = false},
     {coords = vector3(-1043.6724853516,-3498.6240234375,13.311761856079),passed = false},
