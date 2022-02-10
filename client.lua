@@ -4,9 +4,7 @@ local laps = 1
 local checkpointsPassed = 0
 local createCooldown = false
 local inRace = false
-local checkpoints = {
-
-    -- ALWAYS SET PASSED TO FALSE
+local checkpoints = { -- ALWAYS SET PASSED TO FALSE, map for these checkpoints is: https://www.gta5-mods.com/maps/kart-race-airport-ymap, credit to Patoche
     {coords = vector3(-1040.3065185547,-3478.8151855469,13.31156539917), passed = false},
     {coords = vector3(-1046.7602539063,-3486.8466796875,13.313842773438),passed = false},
     {coords = vector3(-1043.6724853516,-3498.6240234375,13.311761856079),passed = false},
@@ -96,10 +94,8 @@ function disp_time(time)
 RegisterNetEvent("GoKart:startCountdown")
 AddEventHandler("GoKart:startCountdown", function(kartId)
     local goKart = NetworkGetEntityFromNetworkId(kartId)
-    local ped = PlayerPedId()
     Citizen.Wait(500)
-    SetPedIntoVehicle(ped, goKart, -1)
-    -- DisableControlAction(0, 23, true)
+    SetPedIntoVehicle(PlayerPedId(), goKart, -1)
     FreezeEntityPosition(goKart, true)
     showCountdown2(255, 0, 0, 3, true)
     Citizen.Wait(3000)
@@ -108,7 +104,7 @@ AddEventHandler("GoKart:startCountdown", function(kartId)
     inRace = true
     while true do
         if inRace then
-            DisablePlayerFiring(ped,true)
+            DisablePlayerFiring(PlayerPedId(),true)
             DisableControlAction(2, 75, true)
             DisableControlAction(2, 37, true)
             DisableControlAction(2, 68, true)
@@ -121,20 +117,20 @@ AddEventHandler("GoKart:startCountdown", function(kartId)
     end
 end)
 
--- Citizen.CreateThread(function()
---     local sleep = 1000
---     while true do
---         if inRace then
---             sleep = 0
---             DrawRect(0.944, 0.886, 0.081, 0.032, 0, 0, 0, 150)
---             DrawAdvancedNativeText(1.013, 0.892, 0.005, 0.0028, 0.29, "LAP:", 255, 255, 255, 255, 0, 0)
---             DrawAdvancedNativeText(1.05, 0.885, 0.005, 0.0028, 0.464, tostring(laps) .. "/" .. tostring(cfg.gameSettings.lapsInRace), 255, 255, 255, 255, 0, 0)
---         else
---             sleep = 1000
---         end
---         Wait(sleep)
---     end
--- end)
+Citizen.CreateThread(function()
+    local sleep = 1000
+    while true do
+        if inRace then
+            sleep = 0
+            DrawRect(0.944, 0.886, 0.081, 0.032, 0, 0, 0, 150)
+            DrawAdvancedNativeText(1.013, 0.892, 0.005, 0.0028, 0.29, "LAP:", 255, 255, 255, 255, 0, 0)
+            DrawAdvancedNativeText(1.05, 0.885, 0.005, 0.0028, 0.464, tostring(laps) .. "/" .. tostring(cfg.gameSettings.lapsInRace), 255, 255, 255, 255, 0, 0)
+        else
+            sleep = 1000
+        end
+        Wait(sleep)
+    end
+end)
 
 Citizen.CreateThread(function()
     local sleep = 1000
@@ -228,21 +224,21 @@ Citizen.CreateThread(function()
 end)
 
 
--- RegisterNetEvent("GoKart:JoinedQueue")
--- AddEventHandler("GoKart:JoinedQueue", function(timer)
---     notify("~g~You have joined the queue.")
---     timeLeft = timer
---     while true do
---         local timeLeftDisplay = disp_time(timeLeft)
---             DrawRect(0.944, 0.886, 0.081, 0.032, 0, 0, 0, 150)
---             DrawAdvancedNativeText(1.013, 0.892, 0.005, 0.0028, 0.29, "TIME:", 255, 255, 255, 255, 0, 0)
---             DrawAdvancedNativeText(1.05, 0.885, 0.005, 0.0028, 0.464, tostring(timeLeftDisplay), 255, 255, 255, 255, 0, 0)
---         if timeLeft == 0 then
---             break
---         end
---     Wait(0)
---     end
--- end)
+RegisterNetEvent("GoKart:JoinedQueue")
+AddEventHandler("GoKart:JoinedQueue", function(timer)
+    notify("~g~You have joined the queue.")
+    timeLeft = timer
+    while true do
+        local timeLeftDisplay = disp_time(timeLeft)
+            DrawRect(0.944, 0.886, 0.081, 0.032, 0, 0, 0, 150)
+            DrawAdvancedNativeText(1.013, 0.892, 0.005, 0.0028, 0.29, "TIME:", 255, 255, 255, 255, 0, 0)
+            DrawAdvancedNativeText(1.05, 0.885, 0.005, 0.0028, 0.464, tostring(timeLeftDisplay), 255, 255, 255, 255, 0, 0)
+        if timeLeft == 0 then
+            break
+        end
+    Wait(0)
+    end
+end)
 
 RegisterNetEvent("GoKart:InQueue")
 AddEventHandler("GoKart:InQueue", function()
