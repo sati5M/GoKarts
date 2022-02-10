@@ -1,4 +1,6 @@
 local timeLeft = 30
+local ped = 0
+local vehicle = 0
 local lastCheckpoint = 1
 local laps = 1
 local checkpointsPassed = 0
@@ -21,10 +23,18 @@ local checkpoints = { -- ALWAYS SET PASSED TO FALSE, map for these checkpoints i
     {coords = vector3(-1027.9384765625,-3489.0173339844,13.323768615723),passed = false}
 }
 
+Citizen.CreateThread(function() 
+    while true do
+        -- cache every tick
+        ped = PlayerPedId()
+        vehicle = GetVehiclePedIsIn(ped) 
+        Wait(0)
+    end
+end)
+
 Citizen.CreateThread(function()   
     local sleep = 1000
     while true do
-        local ped = PlayerPedId()
         local pedCoords = GetEntityCoords(ped)
         if #(pedCoords - cfg.locations.startLocation) < 10 then
             sleep = 0
@@ -85,17 +95,11 @@ AddEventHandler("GoKart:NotifyEndPosition", function(position)
     end
 end)
 
-function disp_time(time)
-    local minutes = math.floor((time % 3600) /60)
-    local seconds = math.floor(time % 60)
-    return string.format("%02d:%02d",minutes,seconds)
-  end
-
 RegisterNetEvent("GoKart:startCountdown")
 AddEventHandler("GoKart:startCountdown", function(kartId)
     local goKart = NetworkGetEntityFromNetworkId(kartId)
     Citizen.Wait(500)
-    SetPedIntoVehicle(PlayerPedId(), goKart, -1)
+    SetPedIntoVehicle(ped, goKart, -1)
     FreezeEntityPosition(goKart, true)
     showCountdown2(255, 0, 0, 3, true)
     Citizen.Wait(3000)
@@ -104,7 +108,7 @@ AddEventHandler("GoKart:startCountdown", function(kartId)
     inRace = true
     while true do
         if inRace then
-            DisablePlayerFiring(PlayerPedId(),true)
+            DisablePlayerFiring(ped,true)
             DisableControlAction(2, 75, true)
             DisableControlAction(2, 37, true)
             DisableControlAction(2, 68, true)
@@ -146,11 +150,9 @@ Citizen.CreateThread(function()
                 elseif isLastCheckpoint(k, checkpoints, laps) == false then
                     checkpoint = CreateCheckpoint(47, v.coords, checkpoints[k].coords, 6.0, cfg.gameSettings.checkPointColour.r, cfg.gameSettings.checkPointColour.g, cfg.gameSettings.checkPointColour.b, cfg.gameSettings.checkPointColour.a, 0)
                 end
-                local ped = PlayerPedId()
                 while not v.passed do
                     if #(GetEntityCoords(ped) - cfg.locations.locToRadiusCheckFrom) > cfg.gameSettings.radiusToCheck then
-                        if IsPedInAnyVehicle(ped, false) then
-                            local vehicle = GetVehiclePedIsIn(ped, false)
+                        if vehicle ~= 0 then
                             local vehModel = GetEntityModel(vehicle)
                             if cfg.gameSettings.vehicleModel == vehModel then
                                 SetEntityCoords(vehicle, checkpoints[lastCheckpoint].coords, true, true, false, false)
@@ -175,7 +177,6 @@ Citizen.CreateThread(function()
                         
                         if #(GetEntityCoords(ped) - v.coords) < 6 then
                             v.passed = true
-                            local vehicle = GetVehiclePedIsIn(PlayerPedId(), false)
                             SetVehicleEngineHealth(vehicle, 9999)
 		                    SetVehiclePetrolTankHealth(vehicle, 9999)
 		                    SetVehicleFixed(vehicle)
@@ -189,9 +190,9 @@ Citizen.CreateThread(function()
                                     SetCamActive(cam, true)
                                     RenderScriptCams(true, false, 0, true, false)
                                     SetCamAffectsAiming(cam, false)
-                                    SetFocusEntity(GetVehiclePedIsIn(ped))
+                                    SetFocusEntity(vehicle)
                                     SetTimecycleModifier("MP_race_finish")
-                                    TaskVehicleDriveToCoordLongrange(ped, GetVehiclePedIsIn(ped, false), checkpoints[2].coords, 5.0, 33, 3.0)
+                                    TaskVehicleDriveToCoordLongrange(ped, vehicle, checkpoints[2].coords, 5.0, 33, 3.0)
                                     inRace = false
                                     Citizen.Wait(1000)
                                     ClearTimecycleModifier("MP_race_finish")

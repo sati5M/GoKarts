@@ -26,6 +26,13 @@ function tablelength(T)
     return count
 end
 
+function disp_time(time)
+    local minutes = math.floor((time % 3600) /60)
+    local seconds = math.floor(time % 60)
+    return string.format("%02d:%02d",minutes,seconds)
+  end
+
+
 function isLastCheckpoint(position, checkpointsTable, laps)
     if position == tablelength(checkpointsTable) then
         if laps == cfg.gameSettings.lapsInRace then
