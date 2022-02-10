@@ -1,5 +1,5 @@
 
-GoKarts script for FiveM made by sati
+GoKarts script for FiveM made by sati. The resmon for this script is 0.02-0.4ms when idle/next to marker. While the race is ongoing, it is 0.05-0.07ms. To reduce this, feel free to remove all the drawAdvancedNativeText's used as this increases resmon by 0.01-0.03.
 
 𝐅𝐀𝐐:
 
