@@ -59,7 +59,7 @@ end)
 RegisterNetEvent("GoKart:LeaveCreateVehicle")
 AddEventHandler("GoKart:LeaveCreateVehicle", function(coords)
     local source = source
-    local goKart = Citizen.InvokeNative(`CREATE_AUTOMOBILE` & 0xFFFFFFFF, cfg.gameSettings.vehicleModel, coords.x, coords.y, coords.z + 1, 60.19)
+    local goKart = Citizen.InvokeNative(`CREATE_AUTOMOBILE` & 0xFFFFFFFF, cfg.gameSettings.vehicleModel, coords.x, coords.y, coords.z + 1, cfg.locations.heading)
     Wait(200)
     local kartId = NetworkGetNetworkIdFromEntity(goKart)
     for k, v in pairs(existingKarts) do
@@ -95,7 +95,7 @@ function startGame()
                 
             else
                 
-            local goKart = Citizen.InvokeNative(`CREATE_AUTOMOBILE` & 0xFFFFFFFF, cfg.gameSettings.vehicleModel, cfg.locations.spawnpoints[k], 60.19)
+            local goKart = Citizen.InvokeNative(`CREATE_AUTOMOBILE` & 0xFFFFFFFF, cfg.gameSettings.vehicleModel, cfg.locations.spawnpoints[k], cfg.locations.heading)
             Wait(50)
             local kartId = NetworkGetNetworkIdFromEntity(goKart)
             existingKarts[k] = {kartId = kartId, tempid = v.tempid}
